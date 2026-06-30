@@ -1,0 +1,56 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "clean",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            "$targets = @(\"${workspaceFolder}/bin\", \"${workspaceFolder}/build\", \"${workspaceFolder}/YAML-Parser.jar\"); foreach ($target in $targets) { if (Test-Path -LiteralPath $target) { Remove-Item -LiteralPath $target -Recurse -Force } }"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "compile main",
+            "type": "process",
+            "command": "powershell.exe",
+            "dependsOn": [
+            "clean"
+            ],
+            "dependsOrder": "sequence",
+            "args": [
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            "New-Item -ItemType Directory -Force \"${workspaceFolder}/bin\" | Out-Null; $sources = Get-ChildItem -Path \"${workspaceFolder}/src/main/java\" -Filter *.java -Recurse | ForEach-Object { $_.FullName }; if (-not $sources) { throw \"No Java source files found in src/main/java\" }; javac -encoding UTF-8 -cp \"${workspaceFolder}/src/main/java;${workspaceFolder}/src/main/test\" -sourcepath \"${workspaceFolder}/src/main/java\" -d \"${workspaceFolder}/bin\" $sources; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "export jar",
+            "type": "process",
+            "command": "powershell.exe",
+            "dependsOn": [
+            "compile main"
+            ],
+            "dependsOrder": "sequence",
+            "args": [
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            "jar cf \"${workspaceFolder}/YAML-Parser.jar\" -C \"${workspaceFolder}/bin\" .; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }"
+            ],
+            "group": {
+            "kind": "build",
+            "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+# Ignore everything
+*
+
+# Exclusions
+!.vscode/
+!.vscode/*
+
+!lib/
+!lib/*
+
+!src/
+!src/main/
+!src/main/java/
+!src/main/java/**
+
+!.gitignore
+!README.md
+!*.jar
