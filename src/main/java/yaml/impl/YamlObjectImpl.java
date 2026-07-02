@@ -46,11 +46,6 @@ public class YamlObjectImpl implements YamlObject {
     }
 
     @Override
-    public void clear() {
-        this.values.clear();
-    }
-
-    @Override
     public YamlValue get(String name) {
         return this.values.getOrDefault(name, null);
     }

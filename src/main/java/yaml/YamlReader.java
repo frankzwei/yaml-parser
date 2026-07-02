@@ -112,7 +112,6 @@ public class YamlReader implements Closeable {
             if (c != ' ') {
                 break;
             }
-
         }
 
         return i;

@@ -12,11 +12,12 @@ import yaml.impl.YamlNumberImpl;
 import yaml.impl.YamlObjectImpl;
 import yaml.impl.YamlStringImpl;
 import yaml.type.YamlArray;
+import yaml.type.YamlNumber;
 import yaml.type.YamlObject;
 import yaml.type.YamlValue;
 
 public class FlowParser {
-    
+
     private String content;
     private int lineNumber;
     private int pos = 0;
@@ -185,13 +186,37 @@ public class FlowParser {
             return YamlValue.FALSE;
         }
 
-        if (raw.matches("[-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?")) {
-            try {
-                return YamlNumberImpl.getYamlNumber(new BigDecimal(raw));
-            } catch (NumberFormatException ignored) {}
+        YamlNumber number = FlowParser.parseNumber(raw);
+        if (number == null) {
+            return YamlStringImpl.getYamlString(raw);
         }
 
-        return YamlStringImpl.getYamlString(raw);
+        return number;
+    }
+
+    private static YamlNumber parseNumber(String content) {
+        if (content == null || content.isEmpty()) {
+            return null;
+        }
+
+        if (!content.matches("[+-]?\\d+(\\.\\d+)?([eE][+-]?\\d+)?")) {
+            return null;
+        }
+
+        try {
+            if (content.indexOf('.') >= 0 || content.toLowerCase().indexOf('e') >= 0) {
+                return YamlNumberImpl.getYamlNumber(new BigDecimal(content));
+            }
+
+            long value = Long.parseLong(content);
+            if (value >= Integer.MIN_VALUE && value <= Integer.MAX_VALUE) {
+                return YamlNumberImpl.getYamlNumber((int) value);
+            }
+
+            return YamlNumberImpl.getYamlNumber(value);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
     }
 
     private String parseQuotedString() {

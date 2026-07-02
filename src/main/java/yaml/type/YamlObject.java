@@ -67,7 +67,7 @@ public interface YamlObject extends YamlValue {
         throw new YamlInvalidValueException("Failed to read in double");
     }
 
-    default double getDouble(String name, long defaultValue) {
+    default double getDouble(String name, double defaultValue) {
         YamlNumber value = this.getYamlNumber(name);
         return value == null ? defaultValue : value.doubleValue();
     }
@@ -94,7 +94,6 @@ public interface YamlObject extends YamlValue {
     }
 
     int size();
-    void clear();
     YamlValue get(String name);
     Map<String, YamlValue> asMap();
     Set<Entry<String, YamlValue>> entrySet();
